@@ -15,6 +15,7 @@ jobs:
         DOCKER_TARGETS: libedgetpu
       run: |
         make docker-build
+        ls -al
 
     - name: Upload Build artifact
       uses: actions/upload-artifact@v3
