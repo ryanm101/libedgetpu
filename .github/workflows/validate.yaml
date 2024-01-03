@@ -7,9 +7,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Build Docker Image
-      run: docker build -t tpubuilder --build-arg IMAGE=ubuntu:18.04 ./docker
-
     - name: Run Build in Custom Docker Container
       env:
         CPU: "k8"
