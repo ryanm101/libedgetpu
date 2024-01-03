@@ -9,13 +9,10 @@ jobs:
 
     - name: Run Build in Custom Docker Container
       env:
-        CPU: "k8"
-        DOCKER_CPUS: "k8"
         DOCKER_IMAGE: "ubuntu:18.04"
         DOCKER_TARGETS: libedgetpu
       run: |
         make docker-build
-        ls -al
 
     - name: Upload Build artifact
       uses: actions/upload-artifact@v3
