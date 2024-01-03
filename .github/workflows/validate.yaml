@@ -2,7 +2,7 @@ name: Validate
 on: [workflow_call]
 jobs:
   build:
-    runs-on: ubuntu:18.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 12
     permissions:
       contents: read  
@@ -41,7 +41,7 @@ jobs:
             software-properties-common \
             $(grep Ubuntu /etc/os-release > /dev/null && echo vim-common || echo xxd)
 
-          if grep 'Bionic Beaver' /etc/os-release > /dev/null; then \
+          if grep 'Focal Fossa' /etc/os-release > /dev/null; then \
             add-apt-repository ppa:ubuntu-toolchain-r/test \
             && DEBIAN_FRONTEND=noninteractive apt-get install -y gcc-9 g++-9; \
           fi
