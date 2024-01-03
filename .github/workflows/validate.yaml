@@ -20,5 +20,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: drivers
-        path: bazel-out
+        path: out
         retention-days: 1
