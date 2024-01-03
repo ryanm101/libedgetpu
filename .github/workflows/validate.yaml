@@ -2,56 +2,16 @@ name: Validate
 on: [workflow_call]
 jobs:
   build:
-    runs-on: ubuntu-20.04
-    timeout-minutes: 12
-    permissions:
-      contents: read  
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Build
-        run: |
-          docker/update_sources.sh
-          dpkg --add-architecture armhf
-          dpkg --add-architecture arm64
-          apt-get update \
-          && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-            libc6-dev:arm64 \
-            libc6-dev:armhf \
-          && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-            python3-all \
-            python3-numpy \
-            build-essential \
-            crossbuild-essential-armhf \
-            crossbuild-essential-arm64 \
-            libusb-1.0-0-dev \
-            libusb-1.0-0-dev:arm64 \
-            libusb-1.0-0-dev:armhf \
-            zlib1g-dev \
-            zlib1g-dev:armhf \
-            zlib1g-dev:arm64 \
-            sudo \
-            debhelper \
-            pkg-config \
-            zip \
-            unzip \
-            curl \
-            wget \
-            git \
-            tree \
-            software-properties-common \
-            $(grep Ubuntu /etc/os-release > /dev/null && echo vim-common || echo xxd)
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-          if grep 'Focal Fossa' /etc/os-release > /dev/null; then \
-            add-apt-repository ppa:ubuntu-toolchain-r/test \
-            && DEBIAN_FRONTEND=noninteractive apt-get install -y gcc-9 g++-9; \
-          fi
+    - name: Build Docker Image
+      run: docker build -t tpubuilder ./docker
 
-
-          BAZEL_VERSION=4.2.2
-          
-          wget -O /bazel https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh && \
-          bash /bazel && \
-          rm -f /bazel
-
-          make libedgetpu
-          # CPU=k8 DOCKER_CPUS="k8" DOCKER_IMAGE="ubuntu:18.04" DOCKER_TARGETS=libedgetpu make docker-build
+    - name: Run Build in Custom Docker Container
+      run: |
+        docker run --rm -i \
+          -v ${{ github.workspace }}:/workspace \
+          tpubuilder /bin/bash -c "make libedgetpu"
