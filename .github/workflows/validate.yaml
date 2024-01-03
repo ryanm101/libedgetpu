@@ -13,9 +13,10 @@ jobs:
     - name: Run Build in Custom Docker Container
       run: |
         pwd && ls -la
+        echo ${{ github.workspace }}
         docker run --rm -i \
           -v ${{ github.workspace }}/libedgetpu:/workspace \
-          tpubuilder /bin/bash -c "make libedgetpu"
+          tpubuilder /bin/bash -c "ls -al && make libedgetpu"
     
     - name: Upload Build artifact
       uses: actions/upload-artifact@v3
