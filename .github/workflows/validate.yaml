@@ -14,6 +14,21 @@ jobs:
       run: |
         make docker-build
 
+    - name: Create install script
+      env:
+        SCRIPT_FILE: out/install.sh
+      run: |
+        cat > ${SCRIPT_FILE} <<EOF
+        sudo mkdir -p /usr/lib/tpu/lib
+        sudo cp --preserve=links out/direct/k8/* /usr/lib/tpu/lib
+        sudo echo /usr/lib/tpu/lib | sudo tee -a /etc/ld.so.conf.d/tpu.conf
+        sudo ldconfig
+        sudo echo SUBSYSTEM=="usb",ATTRS{idVendor}=="1a6e",GROUP="apex" >> /etc/udev/rules.d/65-apex.rules
+        sudo echo SUBSYSTEM=="usb",ATTRS{idVendor}=="18d1",GROUP="apex" >> /etc/udev/rules.d/65-apex.rules
+        EOF
+
+        chmod u+x ${SCRIPT_FILE}
+
     - name: Upload Build artifact
       uses: actions/upload-artifact@v3
       with:
