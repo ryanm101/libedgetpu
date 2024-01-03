@@ -11,13 +11,14 @@ jobs:
       run: docker build -t tpubuilder --build-arg IMAGE=ubuntu:18.04 ./docker
 
     - name: Run Build in Custom Docker Container
+      env:
+        CPU: "k8"
+        DOCKER_CPUS: "k8"
+        DOCKER_IMAGE: "ubuntu:18.04"
+        DOCKER_TARGETS: libedgetpu
       run: |
-        pwd && ls -la
-        echo ${{ github.workspace }}
-        docker run --rm -i \
-          -v ${{ github.workspace }}:/workspace \
-          tpubuilder /bin/bash -c "ls -al /workspace && make -C /workspace libedgetpu"
-    
+        make docker-build
+
     - name: Upload Build artifact
       uses: actions/upload-artifact@v3
       with:
